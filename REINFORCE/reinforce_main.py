@@ -30,7 +30,7 @@ class Pi(nn.Module):
     def act(self, state):
         x = torch.from_numpy(state.astype(np.float32))  # 转换为tensor
         pdparam = self.forward(x)  # 前向传播
-        pd = Categorical(logits=pdparam)  #  probability distribution|构建动作概率分布的实例
+        pd = Categorical(logits=pdparam)  # probability distribution|构建动作概率分布的实例
         action = pd.sample()  # Pi(a|s) in action via pd|依据概率选择动作-动作采样
         log_prob = pd.log_prob(action)  # log_prob of pi(a|s)|动作的对数概率
         self.log_probs.append(log_prob)  # store for traning|事件中动作序列的对数概率列表
@@ -47,9 +47,9 @@ def train(pi, optimizer):
         rets[t] = future_ret
     rets = torch.tensor(rets)
     log_probs = torch.stack(pi.log_probs)
-    loss = - log_probs * rets
+    loss = - log_probs * rets  # 加负号最小化损失
     loss = torch.sum(loss)
-    optimizer.zero_grad()
+    optimizer.zero_grad()  # 梯度清零
     loss.backward()
     optimizer.step()
     return loss
